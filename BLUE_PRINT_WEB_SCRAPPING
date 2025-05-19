@@ -1,0 +1,158 @@
+WEB SCRAPING BLUEPRINT
+
+step 1: Define your objective
+           clearly state:
+                      ->what data are you collecting?
+                      ->from which website?
+                      ->what format do you want the data in (CSV, DB, etc., )?
+step 2: Inspect the website
+           use browser tools( right-click > inspect or F12) to:
+                       ->locate the HTML elements (tags/classes/IDs) containing the data
+                       ->understand the structure
+                       ->identify pagination or load-more mechanisms
+                       ->check robots.txt (e.g., https://example.com/robots.txt)
+step 3: choose your tools
+                | Case                  | Use                          |
+                | --------------------- | ---------------------------- |
+                | Static HTML content   | `requests` + `BeautifulSoup` |
+                | JavaScript-heavy site | `Selenium` or `Playwright`   |
+                | Large-scale scraping  | `Scrapy` or async frameworks |
+
+step 4: set up your script
+       start with basic imports and setup:
+                    import requests
+                    from bs4 import BeautifulSoup
+                    import pandas as pd
+                    import time
+                    import logging
+
+                     #optional: set headers to avoid getting blocked
+                    headers = {'User-Agent': 'Mozilla/5.0'}
+
+
+step 5: write the scraping logic
+                url = 'https://example.com/page1'
+                response = requests.get(url, headers=headers)
+                soup = BeautifylSoup(response.text, 'html.parser')
+                                
+                # Extract desired elements
+                titles = [tag.text.strip() for tag in soup.find_all('h2' , class_='title')]
+                prices = [tag.text.strip() for tag in soup.find_all('span', class_='price')]
+
+
+
+step 6: handle pagination(if needed)
+
+              for page in range(1,6):      # Adjust range as needed 
+                  url = f'https://example.com/page={page}'
+                  response = requests.get(url, headers=headers)
+                  soup = BeautifulSoup(response.text, 'html.parser')
+                  time.sleep(2)         # be polite to the server
+step 7: save data
+              df= pd.DateFrame({'title': titles,'Price': prices})
+              df.to_csv('output.csv' , index=False)
+
+step 8: Error handling & logging(robustness)
+
+              try:
+                  response = requests.get(url, timeout=10, headers=headers)
+                  response.raise_for_status()
+              except Exception as e:
+                  logging.error(f'Error fetching {url}: {e}')
+                  continue
+
+
+step 9: politeness and ethics
+              -> respect robots.txt
+              -> use time.sleep() between requests
+              -> don't overload servers
+              -> don't scrape personal or sensitive data
+
+step 10: automate & schedule(optinal)
+use tools like:
+    -> cron(Linux) or Task Scheduler(windows)
+    -> Python libraries: schedule, apscheduler
+
+
+####################----DEMO  CODE----###############
+                            import time
+                            import pandas as pd
+                            from selenium import webdriver
+                            from selenium.webdriver.chrome.options import Options
+                            from selenium.webdriver.common.by import By
+                            
+                            # Setup headless Chrome
+                            options = Options()
+                            options.add_argument('--headless')
+                            options.add_argument('--disable-gpu')
+                            driver = webdriver.Chrome(options=options)
+                            
+                            # Base URL (update to match specific search/filter)
+                            base_url = "https://www.99acres.com/search/property/buy/residential-land-in-bangalore"
+                            
+                            # Data storage
+                            titles, prices, areas, locations, urls, dates = [], [], [], [], [], []
+                            
+                            # Loop through first N pages
+                            for page in range(1, 4):  # Change range for more pages
+                                url = f"{base_url}?page={page}"
+                                driver.get(url)
+                                time.sleep(5)  # Wait for JavaScript to load
+                            
+                                listings = driver.find_elements(By.CLASS_NAME, "srpTuple__tupleTable")
+                            
+                                for listing in listings:
+                                    try:
+                                        title = listing.find_element(By.CLASS_NAME, "srpTuple__propertyTitle").text
+                                    except:
+                                        title = "N/A"
+                                    try:
+                                        price = listing.find_element(By.CLASS_NAME, "srpTuple__propertyPrice").text
+                                    except:
+                                        price = "N/A"
+                                    try:
+                                        area = listing.find_element(By.CLASS_NAME, "srpTuple__builtupAreaSrp").text
+                                    except:
+                                        area = "N/A"
+                                    try:
+                                        location = listing.find_element(By.CLASS_NAME, "srpTuple__propertyAddress").text
+                                    except:
+                                        location = "N/A"
+                                    try:
+                                        url = listing.find_element(By.TAG_NAME, "a").get_attribute("href")
+                                    except:
+                                        url = "N/A"
+                                    try:
+                                        posted_date = listing.find_element(By.CLASS_NAME, "srpTuple__postedOn").text
+                                    except:
+                                        posted_date = "N/A"
+                            
+                                    # Append to lists
+                                    titles.append(title)
+                                    prices.append(price)
+                                    areas.append(area)
+                                    locations.append(location)
+                                    urls.append(url)
+                                    dates.append(posted_date)
+                            
+                                print(f"Page {page} scraped")
+                            
+                            # Close browser
+                            driver.quit()
+                            
+                            # Save to CSV
+                            df = pd.DataFrame({
+                                'Title': titles,
+                                'Price': prices,
+                                'Area': areas,
+                                'Location': locations,
+                                'URL': urls,
+                                'Posted Date': dates
+                            })
+                            df.to_csv("99acres_land_listings.csv", index=False)
+                            print("Scraping complete. CSV saved.")
+
+
+
+
+
