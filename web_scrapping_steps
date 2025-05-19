@@ -1,0 +1,115 @@
+Web scraping involves a structured process to extract data from websites systematically and ethically. 
+Here's a full breakdown of the procedures you should follow, step-by-step:
+
+✅ 1. Define Your Goal
+Clearly answer:
+          ->What data do you need?
+          ->Which websites will you scrape?
+          ->How will the data be used?
+
+🔍 Example: “Scrape rental listings from 99acres.com including title, location, price, and area.”
+
+✅ 2. Inspect the Website
+        ->Open the target site and:
+        ->Use Developer Tools (Right-click → Inspect Element or F12)
+        ->Find the structure of the HTML containing the data
+        ->Check for:
+                ->Tags (<div>, <span>, <a>)
+                ->class or id attributes
+                ->Pagination logic
+                ->Dynamic loading (JavaScript)
+
+✅ 3. Choose Scraping Tools
+Pick tools based on the site's complexity:
+
+Site Type            	               Tool
+Static HTML        	          requests, BeautifulSoup
+JavaScript-Rendered	          Selenium, Playwright
+Large scale or API use       	Scrapy, aiohttp
+
+
+✅ 4. Make an HTTP Request
+Use requests to load static pages:
+
+                                              import requests
+                                              from bs4 import BeautifulSoup
+                                              
+                                              url = 'https://example.com/page1'
+                                              response = requests.get(url)
+                                              soup = BeautifulSoup(response.text, 'html.parser')
+
+
+✅ 5. Parse the HTML
+Extract data using tags, classes, or IDs:
+
+                                              titles = soup.find_all('div', class_='property-title')
+                                              for title in titles:
+                                                  print(title.text.strip())
+
+
+✅ 6. Handle Pagination
+Loop through multiple pages by changing the page number in the URL:
+
+                                              for page in range(1, 6):
+                                                  url = f'https://example.com/page={page}'
+                                                  response = requests.get(url)
+                                                  # parse as usual
+
+
+✅ 7. Handle Dynamic Content
+Use Selenium if data appears after the page loads:
+
+                                              from selenium import webdriver
+                                              
+                                              driver = webdriver.Chrome()
+                                              driver.get('https://example.com')
+                                              html = driver.page_source
+                                              soup = BeautifulSoup(html, 'html.parser')
+
+
+✅ 8. Store the Extracted Data
+Save your results to a CSV, Excel, or database:
+
+                                              import pandas as pd
+                                              
+                                              data = {'Title': titles, 'Price': prices}
+                                              df = pd.DataFrame(data)
+                                              df.to_csv('output.csv', index=False)
+
+
+✅ 9. Respect Robots.txt and Site Policies
+Always:
+->Check https://example.com/robots.txt
+->Avoid scraping if disallowed
+->Limit request rate using time.sleep()
+->Use headers to mimic browsers:
+
+                                              headers = {'User-Agent': 'Mozilla/5.0'}
+                                              requests.get(url, headers=headers)
+
+
+✅ 10. Add Error Handling & Logging
+Improve robustness with:
+
+                                    import time
+                                    import logging
+                                    
+                                    logging.basicConfig(level=logging.INFO)
+                                    try:
+                                        response = requests.get(url, timeout=10)
+                                        response.raise_for_status()
+                                    except Exception as e:
+                                        logging.error(f"Failed to fetch {url}: {e}")
+                                        time.sleep(5)
+
+
+✅ Summary Checklist:
+Step	Must Do?
+Define goal                      	✅
+Inspect HTML                    	✅
+Choose tools (requests/Selenium)	✅
+Make requests & parse data	      ✅
+Handle pagination	                ✅
+Store data (CSV, DB)	            ✅
+Respect terms/robots.txt	        ✅
+Add delay + error handling	      ✅
