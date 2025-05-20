@@ -104,12 +104,12 @@ Improve robustness with:
 
 
 ✅ Summary Checklist:
-Step	Must Do?
+Step	                             Must Do?
 Define goal                      	✅
 Inspect HTML                    	✅
 Choose tools (requests/Selenium)	✅
-Make requests & parse data	      ✅
-Handle pagination	                ✅
-Store data (CSV, DB)	            ✅
-Respect terms/robots.txt	        ✅
-Add delay + error handling	      ✅
+Make requests & parse data	          ✅
+Handle pagination	                    ✅
+Store data (CSV, DB)	          ✅
+Respect terms/robots.txt	          ✅
+Add delay + error handling	          ✅
