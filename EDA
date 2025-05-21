@@ -1,0 +1,130 @@
+✅ Checklist for Exploratory Data Analysis (EDA)
+  -->1 Understand the Dataset
+        1. What does each feature(column) represent?
+        2. What's the target variable (if any)?
+        3. What is the size of the dataset?  (df.shape)
+        4. Display the first few rowa:  df.head()
+
+  -->2 check for missing values
+                  df.isnull().sum()
+        Drop missing rows/columns
+        fill with mean/median/mode
+        use forward/backward fill, or imputation
+
+   -->3 understand Data types
+                    df.info()
+         check if columns are numeric, categorical, datetime, etc.
+         convert types if needed (e.g., string to date)
+
+   -->4 Summery Statistics
+                      df.describe()
+         min, max, mean, std, percentiles
+         useful for spotting outliers and scale differences
+
+   -->5 Visualize Distributions
+                      df['Feature'].hist()
+                      sns.boxplot(data=df, x='Feature')
+        for categorical features
+                      df['Category'].value_counts().plot(kind='bar')
+
+    -->6 Check Feature correlations
+                       df.corr()
+                       sns.heatmap(df.corr(), annot=True, cmap='coolwarm')
+          helps in detecting multicollinearity
+          identify highly correlated features with the target
+
+     -->7 Outliers detection 
+          use boxplots or z-score/IQR methods
+                         sns.boxplot(x='Feature', data=df)
+     -->8 Target variable analysis
+            class balance for classification: y.value_counts()
+            Distribution for regression: histogram, KDe
+
+     -->9 Bivariate analysis
+            Numerical vs. numerical: scatter plot
+            categorical vs. target: boxplots, bar plots
+                            sns.boxplot(x='category', y='target', data=df)
+
+     -->10 Feature Engineering (optional at this stage)
+            create new meaningful features
+            Binning, encoding,  date parts, ratios, etc.
+ 
+🛠 Tools Often Used:
+-> pandas, numpy --data handling
+-> matplotlib, seaborn, plotly--visualization
+-> scipy, sklearn --stats and correlation
+
+
+
+Python template for performing Exploratory Data Analysis (EDA) on any dataset using pandas, matplotlib, and seaborn.
+
+
+
+# 📦 Step 1: Import Libraries
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Display plots inline (for Jupyter)
+%matplotlib inline
+
+# 📥 Step 2: Load Your Dataset
+df = pd.read_csv("your_dataset.csv")
+
+# 📌 Step 3: Basic Info
+print("Shape of dataset:", df.shape)
+print("\nColumn names:\n", df.columns.tolist())
+print("\nData Types:\n", df.dtypes)
+print("\nSample Data:\n", df.head())
+
+# 🧹 Step 4: Missing Values
+print("\nMissing Values:\n", df.isnull().sum())
+
+# 🧮 Step 5: Summary Stats
+print("\nStatistical Summary:\n", df.describe())
+
+# 📊 Step 6: Categorical Features Count
+cat_cols = df.select_dtypes(include=['object', 'category']).columns
+for col in cat_cols:
+    print(f"\nValue Counts for {col}:\n", df[col].value_counts())
+    sns.countplot(x=col, data=df)
+    plt.xticks(rotation=45)
+    plt.title(f"Count Plot - {col}")
+    plt.show()
+
+# 📈 Step 7: Numeric Distributions
+num_cols = df.select_dtypes(include=['int64', 'float64']).columns
+df[num_cols].hist(bins=20, figsize=(15, 10))
+plt.suptitle("Histograms of Numeric Features")
+plt.show()
+
+# 📉 Step 8: Boxplots to Detect Outliers
+for col in num_cols:
+    plt.figure(figsize=(8, 4))
+    sns.boxplot(x=df[col])
+    plt.title(f"Boxplot - {col}")
+    plt.show()
+
+# 🔗 Step 9: Correlation Matrix
+corr_matrix = df.corr()
+plt.figure(figsize=(12, 8))
+sns.heatmap(corr_matrix, annot=True, fmt=".2f", cmap="coolwarm")
+plt.title("Correlation Heatmap")
+plt.show()
+
+# 🔍 Step 10: Bivariate Analysis (example)
+# Replace 'Target' with your actual target column name
+target = 'Target'  # change this
+if target in df.columns:
+    for col in num_cols:
+        if col != target:
+            sns.scatterplot(x=col, y=target, data=df)
+            plt.title(f"{col} vs {target}")
+            plt.show()
+
+
+
+
+
+ 
